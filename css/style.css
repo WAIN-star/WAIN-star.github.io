@@ -325,6 +325,17 @@ a{color:inherit;text-decoration:none}
   font-size:10px;letter-spacing:3px;color:#555;
 }
 
+/* 作品内多图指示点 */
+.lightbox__dots{
+  position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+  display:flex;gap:10px;
+}
+.lightbox__dots i{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.25);transition:background .3s;
+}
+.lightbox__dots i.on{background:#fff}
+
 /* 卡片悬停放大提示 */
 .work__img{position:relative}
 .work__img::after{

@@ -42,14 +42,18 @@ const lbCat = lb.querySelector('.lightbox__cat');
 const lbYear = lb.querySelector('.lightbox__year');
 const lbCounter = lb.querySelector('.lightbox__counter');
 const lbBignum = lb.querySelector('.lightbox__bignum');
+const lbDots = lb.querySelector('.lightbox__dots');
 let lbList = [];
 let lbIdx = 0;
+let imgIdx = 0;
 
 const pad = n => String(n).padStart(2, '0');
+const imgsOf = w => w.dataset.imgs ? w.dataset.imgs.split(',') : [w.querySelector('img').getAttribute('src')];
 
 function openLb(work) {
   lbList = works.filter(w => !w.classList.contains('is-hidden')); // 只遍历当前筛选结果
   lbIdx = lbList.indexOf(work);
+  imgIdx = 0;
   renderLb();
   lb.classList.add('is-open');
   lb.setAttribute('aria-hidden', 'false');
@@ -58,14 +62,19 @@ function openLb(work) {
 
 function renderLb() {
   const w = lbList[lbIdx];
+  const imgs = imgsOf(w);
   const img = w.querySelector('img');
-  lbImg.src = img.src;
+  lbImg.src = imgs[imgIdx];
   lbImg.alt = img.alt;
   lbTitle.textContent = w.querySelector('h3').textContent;
   lbCat.textContent = w.querySelector('.work__info p').textContent;
   lbYear.textContent = w.querySelector('.work__year').textContent;
   lbCounter.textContent = `${pad(lbIdx + 1)} / ${pad(lbList.length)}`;
   lbBignum.textContent = pad(lbIdx + 1);
+  // 作品内多图指示点
+  lbDots.innerHTML = imgs.length > 1
+    ? imgs.map((_, i) => `<i class="${i === imgIdx ? 'on' : ''}"></i>`).join('')
+    : '';
   lbImg.classList.remove('pop');
   void lbImg.offsetWidth; // 重启动画
   lbImg.classList.add('pop');
@@ -78,7 +87,10 @@ function closeLb() {
 }
 
 function stepLb(d) {
-  lbIdx = (lbIdx + d + lbList.length) % lbList.length;
+  const total = imgsOf(lbList[lbIdx]).length;
+  imgIdx += d;
+  if (imgIdx >= total) { lbIdx = (lbIdx + 1) % lbList.length; imgIdx = 0; }
+  else if (imgIdx < 0) { lbIdx = (lbIdx - 1 + lbList.length) % lbList.length; imgIdx = imgsOf(lbList[lbIdx]).length - 1; }
   renderLb();
 }
 
